@@ -84,7 +84,7 @@ create table teaches
 	 course_id 	varchar(20),
 	 semester 	varchar(20),
 	 year 		varchar(20),
-	 primary key(uid,course_id,semester,year)
+	 primary key(uid,course_id,semester,year),
 	 foreign key(uid) references users
 		on delete cascade,
 	 foreign key(course_id,semester,year) references section
@@ -96,7 +96,7 @@ create table TA
 	 course_id 	varchar(20),
 	 semester 	varchar(20),
 	 year 		varchar(20),
-	 primary key(rollnumber,course_id,semester,year)
+	 primary key(rollnumber,course_id,semester,year),
 	 foreign key(course_id,semester,year) references section
 		on delete cascade,
 	 foreign key(rollnumber) references student
@@ -171,6 +171,6 @@ create table ans
 	 primary key (course_id,semester,year,test_id,index,rollnumber),
 	 foreign key (course_id,semester,year,test_id,index) references question
 	 	on delete cascade,
-	 foreign key (rollnumber) references appears
+	 foreign key (course_id,semester,year,test_id,rollnumber) references appears
 	 	on delete cascade
 	);
