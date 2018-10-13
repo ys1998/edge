@@ -1,4 +1,31 @@
-create table user
+drop table if exists prereq cascade;
+drop table if exists time_slot cascade;
+drop table if exists advisor cascade;
+drop table if exists takes cascade;
+drop table if exists student cascade;
+drop table if exists teaches cascade;
+drop table if exists section cascade;
+drop table if exists instructor cascade;
+drop table if exists course cascade;
+drop table if exists department cascade;
+drop table if exists classroom cascade;
+
+drop table if exists users cascade;
+drop table if exists department cascade;
+drop table if exists instructor cascade;
+drop table if exists student cascade;
+drop table if exists course cascade;
+drop table if exists section cascade;
+drop table if exists teaches cascade;
+drop table if exists TA cascade;
+drop table if exists takes cascade;
+drop table if exists test cascade;
+drop table if exists appears cascade;
+drop table if exists question cascade;
+drop table if exists ans cascade;
+
+
+create table users
 	(uid varchar(20),
 	 hash varchar(256),
 	 salt varchar(20),
@@ -16,7 +43,7 @@ create table instructor
 	 name 		varchar(20) not null,
 	 dept_name 	varchar(20),
 	 primary key(uid),
-	 foreign key(uid) references user
+	 foreign key(uid) references users
 		on delete cascade,
 	 foreign key(dept_name) references department
 		on delete set null
@@ -28,7 +55,7 @@ create table student
 	 uid		varchar(20),
 	 dept_name	varchar(20),
 	 primary key (rollnumber),
-	 foreign key (uid) references user
+	 foreign key (uid) references users
 	 	on delete cascade,
 	 foreign key (dept_name) references department
 	 	on delete set null
@@ -58,10 +85,10 @@ create table teaches
 	 semester 	varchar(20),
 	 year 		varchar(20),
 	 primary key(uid,course_id,semester,year)
-	 foreign key(uid) references user
+	 foreign key(uid) references users
 		on delete cascade,
 	 foreign key(course_id,semester,year) references section
-		on delete cascade,
+		on delete cascade
 	 );
 
 create table TA
@@ -73,7 +100,7 @@ create table TA
 	 foreign key(course_id,semester,year) references section
 		on delete cascade,
 	 foreign key(rollnumber) references student
-		on delete cascade,
+		on delete cascade
 	);
 
 
@@ -135,10 +162,10 @@ create table ans
 	 semester	varchar(20),
 	 year		varchar(20),
 	 test_id	varchar(20),
-	 rollnumber	varchar(20), # Check in appears
-	 index		int, # Should be less than num_ques
-	 stud_ans	blob(10MB),
-	 marks_obt	numeric(5,2), # Should be less than m_marks
+	 index		int, 
+	 rollnumber	varchar(20), 
+	 stud_ans	bytea,
+	 marks_obt	numeric(5,2), 
 	 grader		varchar(20),
 	 comments	varchar(1000),
 	 primary key (course_id,semester,year,test_id,index,rollnumber),
