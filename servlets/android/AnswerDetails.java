@@ -1,6 +1,5 @@
-package servlets.web;
+package servlets.android;
 
-import servlets.common.DbHelper;
 import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -9,18 +8,19 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import servlets.common.DbHelper;
 
 /**
- * Servlet implementation class GetSemCourse
+ * Servlet implementation class AnswerDetails
  */
-@WebServlet("/GetSemCourse")
-public class GetSemCourse extends HttpServlet {
+@WebServlet("/AnswerDetails")
+public class AnswerDetails extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public GetSemCourse() {
+    public AnswerDetails() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -37,17 +37,29 @@ public class GetSemCourse extends HttpServlet {
 		}
 		
 		String userid = (String) session.getAttribute("id");
-		String semester = request.getParameter("semester");
-		String year = request.getParameter("year");
-
+		String semester = (String) session.getAttribute("semester");
+		String year = (String) session.getAttribute("year");
+		String course_id = request.getParameter("course_id");
+		String rollno = request.getParameter("rollno");
+		String test_id = request.getParameter("test_id");
+		String rollnumber = request.getParameter("rollno");
+		String index_temp = request.getParameter("index");
+		int index = Integer.parseInt(index_temp);
+		
 		String query = 
-				"select course_id from teaches where uid=? and semester=? and year=?"
+				"select stud_ans "
+				+ "from ans "
+				+ "where grader = ? and semester = ? and year = ? and course_id = ? and test_id = ? and rollnumber = ? and index = ? "
 				;
 		String json = DbHelper.executeQueryJson(query, 
 				new DbHelper.ParamType[] {DbHelper.ParamType.STRING,
 						DbHelper.ParamType.STRING,
-						DbHelper.ParamType.STRING}, 
-				new String[] {userid, semester, year});
+						DbHelper.ParamType.STRING,
+						DbHelper.ParamType.STRING,
+						DbHelper.ParamType.STRING,
+						DbHelper.ParamType.STRING,
+						DbHelper.ParamType.INT}, 
+				new Object[] {semester,userid, year, course_id, rollno, test_id, rollnumber,index});
 		response.getWriter().print(json);
 	}
 
