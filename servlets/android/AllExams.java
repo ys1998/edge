@@ -32,7 +32,6 @@ public class AllExams extends HttpServlet {
 		// TODO Auto-generated method stub
 		//response.getWriter().append("Served at: ").append(request.getContextPath());
 		
-		// rollnumber,course_id,semester,year,mode
 		HttpSession session = request.getSession();
 		if(session.getAttribute("id") == null) { //not logged in
 			response.getWriter().print(DbHelper.errorJson("Not logged in").toString());
@@ -41,7 +40,7 @@ public class AllExams extends HttpServlet {
 		
 		String userid = (String) session.getAttribute("id");
 		String semester = (String) session.getAttribute("semester");
-		String year = Integer.toString((int)session.getAttribute("year"));
+		int year = (int)session.getAttribute("year");
 		String mode = request.getParameter("mode");
 		String course_id = request.getParameter("course_id");
 		String rollno = request.getParameter("rollno");
@@ -50,11 +49,11 @@ public class AllExams extends HttpServlet {
 			String query = 
 					"select name,test_id,test_date "
 					+ "from appears natural join test "
-					+ "where semester = ? and year = ? and course_id = ? and rollnumber = ?"
-					;
+					+ "where semester = ? and year = ? and course_id = ? and rollnumber = ? "
+					+ "order by test_date desc";
 			String json = DbHelper.executeQueryJson(query, 
 					new DbHelper.ParamType[] {DbHelper.ParamType.STRING,
-							DbHelper.ParamType.STRING,
+							DbHelper.ParamType.INT,
 							DbHelper.ParamType.STRING,
 							DbHelper.ParamType.STRING}, 
 					new Object[] {semester, year, course_id, rollno});
@@ -64,12 +63,12 @@ public class AllExams extends HttpServlet {
 			String query = 
 					"select name,test_id,test_date "
 					+ "from ans natural join test "
-					+ "where grader = ? and semester = ? and year = ? and course_id = ?"
-					;
+					+ "where grader = ? and semester = ? and year = ? and course_id = ? "
+					+ "order by test_date desc";
 			String json = DbHelper.executeQueryJson(query, 
 					new DbHelper.ParamType[] {DbHelper.ParamType.STRING,
 							DbHelper.ParamType.STRING,
-							DbHelper.ParamType.STRING,
+							DbHelper.ParamType.INT,
 							DbHelper.ParamType.STRING}, 
 					new Object[] {userid, semester, year,course_id});
 			response.getWriter().print(json);

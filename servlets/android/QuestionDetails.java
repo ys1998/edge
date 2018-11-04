@@ -39,7 +39,7 @@ public class QuestionDetails extends HttpServlet {
 		}
 		
 		String semester = (String) session.getAttribute("semester");
-		String year = Integer.toString((int)session.getAttribute("year"));
+		int year = (int)session.getAttribute("year");
 		String course_id = request.getParameter("course_id");
 		String rollno = request.getParameter("rollno");
 		String test_id = request.getParameter("test_id");
@@ -55,7 +55,7 @@ public class QuestionDetails extends HttpServlet {
 				;
 		String json = DbHelper.executeQueryJson(query, 
 				new DbHelper.ParamType[] {DbHelper.ParamType.STRING,
-						DbHelper.ParamType.STRING,
+						DbHelper.ParamType.INT,
 						DbHelper.ParamType.STRING,
 						DbHelper.ParamType.STRING,
 						DbHelper.ParamType.INT}, 

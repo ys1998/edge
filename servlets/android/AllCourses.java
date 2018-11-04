@@ -42,7 +42,7 @@ public class AllCourses extends HttpServlet {
 		}
 		
 		String semester = (String) session.getAttribute("semester");
-		String year = Integer.toString((int)session.getAttribute("year"));
+		int year = (int)session.getAttribute("year");
 		String mode = request.getParameter("mode");
 		String rollno = request.getParameter("rollno");
 		if(mode.equals("student")) { // Query for student
@@ -51,8 +51,7 @@ public class AllCourses extends HttpServlet {
 					+ "from takes "
 					+ "where year = ? and semester = ? and rollnumber = ?";
 			List<List<Object>> res1 = DbHelper.executeQueryList(query1, 
-					new DbHelper.ParamType[] {DbHelper.ParamType.STRING,
-							DbHelper.ParamType.STRING,
+					new DbHelper.ParamType[] {DbHelper.ParamType.INT,
 							DbHelper.ParamType.STRING,
 							DbHelper.ParamType.STRING}, 
 					new Object[] { year,semester, rollno});
@@ -63,20 +62,20 @@ public class AllCourses extends HttpServlet {
 			if(semester.equals("Fall")) {
 				query2 =  "select course_id, semester, year "
 						+ "from takes "
-						+ "where (year < ? or (year = ? and semester = 'Spring')) and rollnumber = ?";
+						+ "where (year < ? or (year = ? and semester = 'Spring')) and rollnumber = ? "
+						+ "order by year desc";
 				res2 = DbHelper.executeQueryList(query2, 
-						new DbHelper.ParamType[] {DbHelper.ParamType.STRING,
-								DbHelper.ParamType.STRING,
-								DbHelper.ParamType.STRING,
+						new DbHelper.ParamType[] {DbHelper.ParamType.INT,
+								DbHelper.ParamType.INT,
 								DbHelper.ParamType.STRING}, 
 						new Object[] { year, year, rollno});
 			} else if(semester.equals("Spring")){
 				query2 =  "select course_id,semester,year "
 						+ "from takes "
-						+ "where year < ? and rollnumber = ?";
+						+ "where year < ? and rollnumber = ? "
+						+ "order by year desc";
 				res2 = DbHelper.executeQueryList(query2, 
-						new DbHelper.ParamType[] {DbHelper.ParamType.STRING,
-								DbHelper.ParamType.STRING,
+						new DbHelper.ParamType[] {DbHelper.ParamType.INT,
 								DbHelper.ParamType.STRING}, 
 						new Object[] { year, rollno});
 			}
@@ -88,7 +87,7 @@ public class AllCourses extends HttpServlet {
 	    		ArrayNode inner_temp = new ObjectMapper().createArrayNode();
 	    		inner_temp.add((String)res1.get(i).get(0));
 	    		inner_temp.add((String)res1.get(i).get(1));
-	    		inner_temp.add((String)res1.get(i).get(2));
+	    		inner_temp.add((int)res1.get(i).get(2));
 	    		temp.add(inner_temp);	    		
 	    	}
 	    	node.putArray("present_courses").addAll(temp);
@@ -98,8 +97,8 @@ public class AllCourses extends HttpServlet {
 	    		ArrayNode inner_temp = new ObjectMapper().createArrayNode();
 	    		inner_temp.add((String)res2.get(i).get(0));
 	    		inner_temp.add((String)res2.get(i).get(1));
-	    		inner_temp.add((String)res2.get(i).get(2));
-	    		temp.add(inner_temp);	    		
+	    		inner_temp.add(Integer.toString((int)res2.get(i).get(2)));
+	    		temp2.add(inner_temp);	    		
 	    	}
 	    	node.putArray("past_courses").addAll(temp2);
 	    	response.getWriter().print(node.toString());
@@ -108,11 +107,10 @@ public class AllCourses extends HttpServlet {
 			String query = 
 					"select course_id,semester,year "
 					+ "from TA "
-					+ "where year = ? and semester = ? and rollnumber = ?"
-					;
+					+ "where year = ? and semester = ? and rollnumber = ? "
+					+ "order by year desc";
 			List<List<Object>> res = DbHelper.executeQueryList(query, 
-				new DbHelper.ParamType[] {DbHelper.ParamType.STRING,
-						DbHelper.ParamType.STRING,
+				new DbHelper.ParamType[] {DbHelper.ParamType.INT,
 						DbHelper.ParamType.STRING,
 						DbHelper.ParamType.STRING}, 
 				new Object[] { year,semester, rollno});
@@ -124,7 +122,7 @@ public class AllCourses extends HttpServlet {
 	    		ArrayNode inner_temp = new ObjectMapper().createArrayNode();
 	    		inner_temp.add((String)res.get(i).get(0));
 	    		inner_temp.add((String)res.get(i).get(1));
-	    		inner_temp.add((String)res.get(i).get(2));
+	    		inner_temp.add(Integer.toString((int)res.get(i).get(2)));
 	    		temp.add(inner_temp);	    		
 	    	}
 	    	node.putArray("present_courses").addAll(temp);

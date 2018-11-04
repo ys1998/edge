@@ -38,10 +38,9 @@ public class ExamDetails extends HttpServlet {
 			response.getWriter().print(DbHelper.errorJson("Not logged in").toString());
 			return;
 		}
-		
-		String userid = (String) session.getAttribute("id");
+
 		String semester = (String) session.getAttribute("semester");
-		String year = Integer.toString((int)session.getAttribute("year"));
+		int year = (int)session.getAttribute("year");
 		String mode = request.getParameter("mode");
 		String course_id = request.getParameter("course_id");
 		String rollno = request.getParameter("rollno");
@@ -51,11 +50,11 @@ public class ExamDetails extends HttpServlet {
 			String query = 
 					"select index,marks_obt,grader,m_marks "
 					+ "from ans natural join question "
-					+ "where semester = ? and year = ? and course_id = ? and rollnumber = ? and test_id = ?"
-					;
+					+ "where semester = ? and year = ? and course_id = ? and rollnumber = ? and test_id = ? "
+					+ "order by index asc";
 			String json = DbHelper.executeQueryJson(query, 
 					new DbHelper.ParamType[] {DbHelper.ParamType.STRING,
-							DbHelper.ParamType.STRING,
+							DbHelper.ParamType.INT,
 							DbHelper.ParamType.STRING,
 							DbHelper.ParamType.STRING,
 							DbHelper.ParamType.STRING}, 
