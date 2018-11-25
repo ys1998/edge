@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta charset="UTF-8">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta http-equiv="content-language" content="en">
+
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+  <!-- <script src="node_modules/latex.js/dist/latex.min.js"></script> -->
+  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+  <title>LaTeX.js API Test</title>
+  <script>
+    function loader() {
+      console.log("YOOOO");
+  // $('#latexArea1').hide();
+  // $('#HidingButton1').hide();
+
+    }
+function LatexGen(caller) {
+  console.log(caller)
+  var key = caller.substring(6);
+  var textAreakey = ""
+    var text = document.getElementById("Textarea"+key).value;
+    console.log(text)
+    var generator = new latexjs.HtmlGenerator({ hyphenate: false })
+
+    generator = latexjs.parse(text, { generator: generator })
+    console.log(this)
+    $("#latexArea"+key).empty();
+    document.getElementById("latexArea"+key).appendChild(generator.stylesAndScripts("https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/"))
+    document.getElementById("latexArea"+key).appendChild(generator.domFragment());
+
+  $('#latexArea'+key).show();
+  $('#HidingButton'+key).show();       
+}
+function HideLatex(caller) {
+  var key = caller.substring(12)
+  $('#latexArea'+key).empty();
+  $('#latexArea'+key).hide();
+  $('#HidingButton'+key).hide();
+}
+function LatexAnswerGen(caller) {
+  console.log(caller)
+  var key = caller.substring(12);
+  var textAreakey = ""
+    var text = document.getElementById("TextAnswerarea"+key).value;
+    console.log(text)
+    var generator = new latexjs.HtmlGenerator({ hyphenate: false })
+
+    generator = latexjs.parse(text, { generator: generator })
+    console.log(this)
+    $("#latexAnswerArea"+key).empty();
+    document.getElementById("latexAnswerArea"+key).appendChild(generator.stylesAndScripts("https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/"))
+    document.getElementById("latexAnswerArea"+key).appendChild(generator.domFragment());
+
+  $('#latexAnswerArea'+key).show();
+  $('#HidingAnswerButton'+key).show();       
+}
+function HideAnswerLatex(caller) {
+  var key = caller.substring(18)
+  $('#latexAnswerArea'+key).empty();
+  $('#latexAnswerArea'+key).hide();
+  $('#HidingAnswerButton'+key).hide();
+}
+    
+function AddForm(caller) {
+  var key = caller.substring(7);
+  var nxt = parseInt(key) + 1;
+  var item = document.getElementById(caller);
+  var parent = item.parentNode;
+  parent.removeChild(item);
+var f = document.createElement("form");
+f.setAttribute('id',"form"+nxt.toString());
+f.innerHTML = "Question Number " + nxt.toString() + "<br>";
+
+var l0 = document.createElement("label");
+l0.setAttribute('for',"MaxMarks" + nxt.toString());
+l0.innerHTML = "Maximum Marks:  "
+f.appendChild(l0);
+var t0 = document.createElement("input");
+t0.setAttribute('id',"MaxMarks" + nxt.toString());
+t0.setAttribute('type' , "Number");
+f.appendChild(t0);
+f.appendChild(document.createElement("br"));
+
+var l1 = document.createElement("label");
+l1.setAttribute('for',"Textarea" + nxt.toString());
+l1.innerHTML = "Question Text:  "
+f.appendChild(l1);
+var t1 = document.createElement("textarea");
+t1.setAttribute('id',"Textarea" + nxt.toString());
+t1.setAttribute('rows',"10");
+t1.setAttribute('style',"max-width: 100%");
+f.appendChild(t1);
+
+var s = document.createElement("input");
+s.setAttribute('id',"submit" + nxt.toString() );
+s.setAttribute('value',"Render");
+s.setAttribute('type',"button");
+s.setAttribute('onclick',"return LatexGen(this.id)");
+f.appendChild(s);
+
+var t = document.createElement("div");
+t.setAttribute('id', "latexArea"+ nxt.toString());
+f.appendChild(t);
+
+
+var s2 = document.createElement("input");
+s2.setAttribute('id',"HidingButton" + nxt.toString() );
+s2.setAttribute('value',"Hide");
+s2.setAttribute('type',"button");
+s2.setAttribute('onclick',"return HideLatex(this.id)");
+f.appendChild(s2);
+
+f.appendChild(document.createElement("br"));
+
+
+var l2 = document.createElement("label");
+l2.setAttribute('for',"TextAnswerarea" + nxt.toString());
+l2.innerHTML = "Answer Text:  "
+f.appendChild(l2);
+var t2 = document.createElement("textarea");
+t2.setAttribute('id',"TextAnswerarea" + nxt.toString());
+t2.setAttribute('rows',"10");
+t2.setAttribute('style',"max-width: 100%");
+f.appendChild(t2);
+
+var s21 = document.createElement("input");
+s21.setAttribute('id',"submitAnswer" + nxt.toString() );
+s21.setAttribute('value',"Render");
+s21.setAttribute('type',"button");
+s21.setAttribute('onclick',"return LatexAnswerGen(this.id)");
+f.appendChild(s21);
+
+var t21 = document.createElement("div");
+t21.setAttribute('id', "latexAnswerArea"+ nxt.toString());
+f.appendChild(t21);
+
+
+var s22 = document.createElement("input");
+s22.setAttribute('id',"HidingAnswerButton" + nxt.toString() );
+s22.setAttribute('value',"Hide");
+s22.setAttribute('type',"button");
+s22.setAttribute('onclick',"return HideAnswerLatex(this.id)");
+f.appendChild(s22);
+
+f.appendChild(document.createElement("br"));
+
+var l3 = document.createElement("label");
+l3.setAttribute('for',"Pages" + nxt.toString());
+l3.innerHTML = "Pages Alloted :  "
+f.appendChild(l3);
+var t3 = document.createElement("input");
+t3.setAttribute('id',"Pages" + nxt.toString());
+t3.setAttribute('type' , "Number");
+f.appendChild(t3);
+f.appendChild(document.createElement("br"));
+
+
+parent.appendChild(f);
+
+var s3 = document.createElement("input");
+s3.setAttribute('id',"AddForm" + nxt.toString() );
+s3.setAttribute('value',"+");
+s3.setAttribute('type',"button");
+s3.setAttribute('onclick',"AddForm(this.id)");
+parent.appendChild(s3);
+
+  $('#latexArea' + nxt.toString()).hide();
+  $('#latexAnswerArea' + nxt.toString()).hide();
+  $('#HidingButton' + nxt.toString()).hide();
+  $('#HidingAnswerButton' + nxt.toString()).hide();
+}
+
+function SubmitTest() {
+  console.log(document.getElementById("formAccumulater").lastChild.id);
+  var str;
+  str = document.getElementById("formAccumulater").lastChild.id;
+  str = str.substring(7);
+  var numQues = parseInt(str)
+  console.log(numQues);
+  
+}
+  </script>
+</head>
+<body onload="loader()">
+  <h1>Making A Test</h1>
+
+<div id = "formAccumulater">
+Test ID : <input type="text" id="testID"> <br>
+Name Of Test : <input type="text" id="testID"> <br>
+Test Date : <input type="text" id="testID"> <br>
+<input type="button" value="Submit" id="SubmitTest" onclick="SubmitTest()">
+<br>
+<input type="button" value="+" id="AddForm0" onclick="AddForm(this.id)">
+  </div>
+
+
+
+
+</body>
+
+
+
+</html>
