@@ -1,6 +1,4 @@
-package servlets.web;
-import servlets.common.DbHelper;
-import servlets.common.Config;
+package servlets.android;
 
 import java.io.IOException;
 import javax.servlet.ServletException;
@@ -10,17 +8,18 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import servlets.common.DbHelper;
 /**
- * Servlet implementation class GetPastSemList
+ * Servlet implementation class GetAllStudent
  */
-@WebServlet("/GetPastSemList")
-public class GetPastSemList extends HttpServlet {
+@WebServlet("/GetAllStudents")
+public class GetAllStudent extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public GetPastSemList() {
+    public GetAllStudent() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -37,13 +36,27 @@ public class GetPastSemList extends HttpServlet {
 		}
 		
 		String userid = (String) session.getAttribute("id");
+		String semester = (String) session.getAttribute("semester");
+		int year = (Integer) session.getAttribute("year");
+		String course_id = request.getParameter("course_id");
+		String test_id = request.getParameter("test_id");
+		int index = Integer.parseInt(request.getParameter("index"));
 		
 		String query = 
-				"select semester,year from teaches where uid=?"
+				" select rollnumber, marks_obt "
+				+ " from  ans"
+				+ " where grader = ? and semester = ? and  year = ? and course_id = ? and index = ? and test_id = ? "
 				;
+		
 		String json = DbHelper.executeQueryJson(query, 
-				new DbHelper.ParamType[] {DbHelper.ParamType.STRING}, 
-				new String[] {userid});
+				new DbHelper.ParamType[] {DbHelper.ParamType.STRING,
+						DbHelper.ParamType.STRING,
+						DbHelper.ParamType.INT,
+						DbHelper.ParamType.STRING,
+						DbHelper.ParamType.INT,
+						DbHelper.ParamType.STRING,
+						}, 
+				new Object[] {userid,semester,year, course_id, index,test_id});
 		response.getWriter().print(json);
 	}
 

@@ -61,7 +61,7 @@ public class AllExams extends HttpServlet {
 		}
 		else { // Query for TA
 			String query = 
-					"select name,test_id,test_date "
+					"select distinct name,test_id,test_date "
 					+ "from ans natural join test "
 					+ "where grader = ? and semester = ? and year = ? and course_id = ? "
 					+ "order by test_date desc";

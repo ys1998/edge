@@ -79,6 +79,7 @@ public class Login extends HttpServlet {
 			    	node.put("status", true);
 			    	node.put("type", "instructor");
 			    	node.put("name", (String)res1.get(0).get(0));
+			    	session.setAttribute("name", (String)res1.get(0).get(0));
 			    	response.getWriter().print(node.toString());
 			    	return;
 				} else {

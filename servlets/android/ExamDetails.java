@@ -45,6 +45,7 @@ public class ExamDetails extends HttpServlet {
 		String course_id = request.getParameter("course_id");
 		String rollno = request.getParameter("rollno");
 		String test_id = request.getParameter("test_id");
+		String uid = (String)session.getAttribute("id");
 		
 		if(mode.equals("student")) { // Query for student
 			String query = 
@@ -62,18 +63,19 @@ public class ExamDetails extends HttpServlet {
 			response.getWriter().print(json);
 		}
 		else { // Query for TA later wrote 
-//			String query = 
-//					"select name,test_id,test_date "
-//					+ "from ans natural join test "
-//					+ "where grader = ? and semester = ? and year = ? and course_id = ?"
-//					;
-//			String json = DbHelper.executeQueryJson(query, 
-//					new DbHelper.ParamType[] {DbHelper.ParamType.STRING,
-//							DbHelper.ParamType.STRING,
-//							DbHelper.ParamType.STRING,
-//							DbHelper.ParamType.STRING}, 
-//					new String[] {userid, semester, year,course_id});
-//			response.getWriter().print(json);
+			String query = 
+					"select index, m_marks, count(*) as total, count(marks_obt) as graded "
+					+ "from question natural join ans "
+					+ "where semester = ? and year = ? and course_id = ? and test_id = ? and grader = ? "
+					+ "group by (index, m_marks)";
+			String json = DbHelper.executeQueryJson(query, 
+					new DbHelper.ParamType[] {DbHelper.ParamType.STRING,
+							DbHelper.ParamType.INT,
+							DbHelper.ParamType.STRING,
+							DbHelper.ParamType.STRING,
+							DbHelper.ParamType.STRING}, 
+					new Object[] {semester, year, course_id, test_id, uid});
+			response.getWriter().print(json);
 		}
 	}
 

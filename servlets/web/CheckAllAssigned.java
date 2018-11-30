@@ -10,20 +10,21 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
- * Servlet implementation class AddTA
+ * Servlet implementation class CheckAllAssigned
  */
-@WebServlet("/AddTA")
-public class AddTA extends HttpServlet {
+@WebServlet("/CheckAllAssigned")
+public class CheckAllAssigned extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public AddTA() {
+    public CheckAllAssigned() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -33,42 +34,33 @@ public class AddTA extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		HttpSession session = request.getSession();
-		if(session.getAttribute("id") == null) { //not logged in
-			response.getWriter().print(DbHelper.errorJson("Not logged in").toString());
-			return;
-		}
-		String userid = (String)session.getAttribute("id");
-		String rollnumber = request.getParameter("rollnumber");
+		String test_id = request.getParameter("test_id");
 		String course_id = request.getParameter("course_id");
 		String semester = request.getParameter("semester");
 		Integer year = Integer.valueOf(request.getParameter("year"));
 		
-		String instructorCheckQuery = "select * "
-				+ "from teaches "
-				+ "where uid=? and course_id = ? and semester=? and year=? "
-				;
+		String query = "select count(*) "
+				+ "from ans "
+				+ "where course_id = ? and semester=? and year=? and test_id=? and grader is null";
 		
-		List<List<Object>> res = DbHelper.executeQueryList(instructorCheckQuery, 
+		List<List<Object>> res = DbHelper.executeQueryList(query, 
 				new DbHelper.ParamType[] {DbHelper.ParamType.STRING, DbHelper.ParamType.STRING, 
-						DbHelper.ParamType.STRING, DbHelper.ParamType.INT}, 
-				new Object[] {userid, course_id, semester, year});
+						DbHelper.ParamType.INT, DbHelper.ParamType.STRING}, 
+				new Object[] {course_id, semester, year, test_id});
 		
-		if(res.isEmpty()) {
-			response.getWriter().print(DbHelper.errorJson("Instruction section pair does not exist"));
-			return;
+		ObjectMapper mapper = new ObjectMapper();
+    	ObjectNode node = mapper.createObjectNode();
+		
+    	System.out.println(res);
+    	
+		if (Math.toIntExact((Long)res.get(0).get(0))==0) {
+			node.put("go", "true");
 		}
-		
-		String newMsgQuery = "insert into TA (rollnumber, course_id, semester, year) "
-				+ "values (?, ?, ?, ?)";
-		String json = DbHelper.executeUpdateJson(newMsgQuery, 
-				new DbHelper.ParamType[] {DbHelper.ParamType.STRING, 
-						DbHelper.ParamType.STRING,
-						DbHelper.ParamType.STRING,
-						DbHelper.ParamType.INT},
-				new Object[] {rollnumber, course_id, semester, year});
-		response.getWriter().print(json);
-		
+		else {
+			node.put("go", "false");
+		}
+		response.getWriter().print(node.toString());
+		//response.getWriter().append("Served at: ").append(request.getContextPath());
 	}
 
 	/**

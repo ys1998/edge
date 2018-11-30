@@ -1,0 +1,38 @@
+@import url(http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,400,300,600,700);
+body {
+    background-color: #232323 !important;
+    font-family: 'Open Sans', sans-serif!important;
+    font-size:  14px;
+    color:      white;
+}
+
+div{
+  margin-top: 5px;
+}
+
+.btn-sq-lg {
+  width: 150px !important;
+  height: 150px !important;
+}
+
+.btn-sq {
+  width: 150px !important;
+  height: 100px !important;
+  font-size: 20px;
+}
+
+.btn-sq-sm {
+  width: 50px !important;
+  height: 50px !important;
+  font-size: 10px;
+}
+
+.btn-sq-xs {
+  width: 25px !important;
+  height: 25px !important;
+  padding:2px;
+}
+
+.whitecolor {
+  color: white;
+}

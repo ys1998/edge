@@ -1,6 +1,7 @@
 package servlets.common;
+import java.math.BigDecimal;
 import java.sql.Connection;
-
+import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -23,7 +24,10 @@ public class DbHelper {
 	
 	public static enum ParamType{
 		STRING,
-		INT
+		INT,
+		DOUBLE,
+		NUMERIC,
+		DATE
 	}
 	
 	/**
@@ -137,12 +141,21 @@ public class DbHelper {
 		for(int i=0;i<paramsList.size();i++) {
 			ParamType type = paramTypesList.get(i);
 			Object param = paramsList.get(i);
-			
+			// CHANGED HERE //
 			if(type.equals(ParamType.STRING)) {
 				stmt.setString(i+1, (String)param);
 			}
 			else if(type.equals(ParamType.INT)) {
 				stmt.setInt(i+1, (Integer)param);
+			}
+			else if(type.equals(ParamType.DOUBLE)){
+				stmt.setDouble(i+1, (Double)param);
+			}
+			else if(type.equals(ParamType.NUMERIC)) {
+				stmt.setBigDecimal(i+1, (BigDecimal)param);
+			}
+			else if(type.equals(ParamType.DATE)) {
+				stmt.setDate(i+1, Date.valueOf((String)param));
 			}
 		}
 	}

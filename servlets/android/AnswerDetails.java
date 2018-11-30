@@ -1,6 +1,7 @@
 package servlets.android;
 
 import java.io.IOException;
+import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -9,6 +10,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import servlets.common.DbHelper;
+
+// STUDENT ONLY SERVLET
 
 /**
  * Servlet implementation class AnswerDetails
@@ -38,29 +41,60 @@ public class AnswerDetails extends HttpServlet {
 		
 		String userid = (String) session.getAttribute("id");
 		String semester = (String) session.getAttribute("semester");
-		String year = (String) session.getAttribute("year");
+		int year = (int) session.getAttribute("year");
 		String course_id = request.getParameter("course_id");
-		String rollno = request.getParameter("rollno");
 		String test_id = request.getParameter("test_id");
-		String rollnumber = request.getParameter("rollno");
-		String index_temp = request.getParameter("index");
-		int index = Integer.parseInt(index_temp);
+		int index = Integer.parseInt(request.getParameter("index"));
+		String mode = request.getParameter("mode");
 		
-		String query = 
-				"select stud_ans "
-				+ "from ans "
-				+ "where grader = ? and semester = ? and year = ? and course_id = ? and test_id = ? and rollnumber = ? and index = ? "
-				;
-		String json = DbHelper.executeQueryJson(query, 
-				new DbHelper.ParamType[] {DbHelper.ParamType.STRING,
-						DbHelper.ParamType.STRING,
-						DbHelper.ParamType.STRING,
-						DbHelper.ParamType.STRING,
-						DbHelper.ParamType.STRING,
-						DbHelper.ParamType.STRING,
-						DbHelper.ParamType.INT}, 
-				new Object[] {semester,userid, year, course_id, rollno, test_id, rollnumber,index});
-		response.getWriter().print(json);
+		if(mode.equals("student")) {
+		
+			List<List<Object>> res = DbHelper.executeQueryList("select rollnumber from student where uid = ?",
+					new DbHelper.ParamType[] {DbHelper.ParamType.STRING}, new String[] {userid});
+			String rollno = res.get(0).get(0).toString();
+			if(rollno != null) {
+				String query = 
+						"select model_ans,marks_obt,m_marks,comments "
+						+ "from ans natural join question "
+						+ "where semester = ? and year = ? and course_id = ? and test_id = ? and rollnumber = ? and index = ? "
+						;
+				
+				String json = DbHelper.executeQueryJson(query, 
+						new DbHelper.ParamType[] {DbHelper.ParamType.STRING,
+								DbHelper.ParamType.INT,
+								DbHelper.ParamType.STRING,
+								DbHelper.ParamType.STRING,
+								DbHelper.ParamType.STRING,
+								DbHelper.ParamType.INT}, 
+						new Object[] {semester,year,course_id,test_id,rollno,index});
+				
+				// stud_ans stores the location of the exact answer, get is by parsing from json
+				response.getWriter().print(json);
+			}else {
+				response.getWriter().print(DbHelper.errorJson("Invalid access!"));
+			}
+		}else {
+			// TA
+			String rollno = request.getParameter("rollno");
+			String query = 
+					"select model_ans,marks_obt,m_marks,comments "
+					+ "from ans natural join question "
+					+ "where semester = ? and year = ? and course_id = ? and test_id = ? "
+					+ "and rollnumber = ? and index = ? and grader = ?";
+			
+			String json = DbHelper.executeQueryJson(query, 
+					new DbHelper.ParamType[] {DbHelper.ParamType.STRING,
+							DbHelper.ParamType.INT,
+							DbHelper.ParamType.STRING,
+							DbHelper.ParamType.STRING,
+							DbHelper.ParamType.STRING,
+							DbHelper.ParamType.INT,
+							DbHelper.ParamType.STRING}, 
+					new Object[] {semester,year,course_id,test_id,rollno,index, userid});
+			
+			// stud_ans stores the location of the exact answer, get is by parsing from json
+			response.getWriter().print(json);
+		}
 	}
 
 	/**
